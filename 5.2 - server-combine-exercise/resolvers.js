@@ -2,10 +2,13 @@ const axios = require("axios");
 const Sequelize = require("sequelize");
 require("dotenv").config({ path: "../.env" });
 
+const DB_USERNAME = 'ehkjrbazzaojdc';
+const DB_PASSWORD = 'c05eae357eafd901d62b86dd62532f397b7001fffc7294fdc26e20f1c699f033';
+const DB_HOST = 'ec2-79-125-127-60.eu-west-1.compute.amazonaws.com';
+const DB = 'd2nqp63rcm14jn';
+
 const sequelize = new Sequelize(
-  `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${
-    process.env.DB_HOST
-  }:5432/${process.env.DB}`,
+  `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:5432/${DB}`,
   {
     ssl: true,
     dialectOptions: {
@@ -21,14 +24,14 @@ const Framework = sequelize.define("frameworks", {
   git: {
     type: Sequelize.STRING
   },
-  stars: { type: Sequelize.INTEGER, defaultValue: 0 }
-  // description: { type: Sequelize.STRING, defaultValue: "" },
-  // avatar: { type: Sequelize.STRING, defaultValue: "" }
+  stars: { type: Sequelize.INTEGER, defaultValue: 0 },
+  description: { type: Sequelize.STRING, defaultValue: "" },
+  avatar: { type: Sequelize.STRING, defaultValue: "" },
 });
 
 // When changing the DB you will need to run this with force true that will clean the DB and add the new coloumns
-// Framework.sync({ force: true });
-Framework.sync();
+Framework.sync({ force: true });
+// Framework.sync();
 
 module.exports = {
   Query: {
@@ -47,7 +50,9 @@ module.exports = {
         const framework = await Framework.create({
           name,
           git,
-          stars: gh.data.stargazers_count
+          stars: gh.data.stargazers_count,
+          description: gh.data.description,
+          avatar: gh.data.owner.avatar_url,
         });
 
         return framework;
@@ -57,3 +62,28 @@ module.exports = {
     }
   }
 };
+
+/*
+
+mutation {
+	addFramework(
+  	name: "React"
+  	git: "https://github.com/facebook/react",
+	) {
+  	name,
+  	git,
+    stars,
+    description,
+    avatar,
+	}
+}
+
+frameworks {
+  name,
+  git,
+  stars,
+  description,
+  avatar,
+}
+
+*/
