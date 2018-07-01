@@ -5,10 +5,12 @@ const { ApolloServer, gql } = require('apollo-server')
 // from an existing data source like a REST API or database.
 const books = [
   {
+    id: 1,
     title: 'Harry Potter and the Chamber of Secrets',
     author: 'J.K. Rowling'
   },
   {
+    id: 2,
     title: 'Jurassic Park',
     author: 'Michael Crichton'
   }
@@ -21,6 +23,7 @@ const typeDefs = gql`
 
   # This "Book" type can be used in other type declarations.
   type Book {
+    id: ID!
     title: String
     author: String
   }
@@ -51,3 +54,26 @@ const server = new ApolloServer({ typeDefs, resolvers })
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`)
 })
+
+
+/*
+
+query {
+  books {
+    id,
+    title,
+    author,
+  }
+}
+
+... or you can just do:
+
+{
+  books {
+    id,
+    title,
+    author,
+  }
+}
+
+*/
